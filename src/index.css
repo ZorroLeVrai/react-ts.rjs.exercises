@@ -1,0 +1,56 @@
+html {
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+.center-text {
+  text-align: center;
+}
+
+.large-text {
+  font-size: large;
+}
+
+.warning-text {
+  font-weight: bold;
+  color: red;
+}
+
+.align-right {
+  margin: 0 0 0 auto;
+}
+
+.flexSpaceBetween {
+  display: flex;
+  justify-content: space-between;
+  /* Aligns items with space between them */
+  align-items: center;
+  /* Centers items vertically */
+}
+
+.flexItemRightAlign {
+  /* Pushes the icon to the right */
+  margin-left: auto;
+}
+
+.flexRightAlign {
+  display: flex;
+  justify-content: right;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-margin {
+  margin: 0 0 1rem 0;
+}
+
+.margin-small {
+  margin: 0.1rem;
+}
