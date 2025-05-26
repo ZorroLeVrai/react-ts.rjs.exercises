@@ -1,7 +1,7 @@
 
 const App = () => {
   return (
-    <div>Etape 4</div>
+    <h1 className="center-text">Etape 4</h1>
   )
 }
 
