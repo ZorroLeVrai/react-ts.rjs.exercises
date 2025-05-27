@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { use, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -8,6 +8,7 @@ import { TaskStatus } from '../../taskStatus';
 import { getTimeValue } from "../../timeConverter";
 import styles from "./TaskForm.module.css";
 import type { TaskType } from "../types";
+import { Transition, type TransitionStatus } from "react-transition-group";
 
 const datePattern = /^(\d+[dhms]\s*)+$/;
 
@@ -99,49 +100,80 @@ const TaskForm = ({formTitle, taskData, handleFormSubmit}: TaskFormProps) => {
     reset();
   };
 
+  const nodeRef = useRef<HTMLDivElement>(null);
+
+  const [inProp, setInProp] = useState(false);
+
+  useEffect(() => {
+    setInProp(true);
+  }, []);
+
   useEffect(() => {
     if (isSubmitSuccessful) {
       reset();
     }
   }, [isSubmitSuccessful, reset]);
 
+  const durationInMs = 2000;
+
+  const defaultStyle: React.CSSProperties = {
+    transition: `opacity ${durationInMs}ms ease-in-out`,
+    opacity: 0,
+  }
   
+  const transitionStyles: Record<TransitionStatus, React.CSSProperties> = {
+    entering: { opacity: 1 },
+    entered:  { opacity: 1 },
+    exiting:  { opacity: 0 },
+    exited:  { opacity: 0 },
+    unmounted: { opacity: 0 }
+  };
+
   return (
-    <form className="form-margin" onSubmit={handleSubmit(submitHandler)}>
-      <h2 className="center-text">{formTitle}</h2>
-      <div className={gridFormContainer}>
-        {errors.taskName && <div className={warningStyle}>{errors.taskName.message}</div>}
-        <label htmlFor="task-name">Nom de la tâche</label>
-        <input {...register("taskName")} id="task-name" type="text" placeholder="Nom de la tâche"/>
+    <Transition nodeRef={nodeRef} in={inProp} timeout={durationInMs} unmountOnExit>
+      {state => (
+        <div ref={nodeRef} style={{
+          ...defaultStyle,
+          ...transitionStyles[state]
+        }}>
+          <form className="form-margin" onSubmit={handleSubmit(submitHandler)}>
+            <h2 className="center-text">{formTitle}</h2>
+            <div className={gridFormContainer}>
+              {errors.taskName && <div className={warningStyle}>{errors.taskName.message}</div>}
+              <label htmlFor="task-name">Nom de la tâche</label>
+              <input {...register("taskName")} id="task-name" type="text" placeholder="Nom de la tâche"/>
 
-        {errors.totalTime && <div className={warningStyle}>{errors.totalTime.message}</div>}
-        <label htmlFor="task-total-time">Temps total estimé</label>
-        <input {...register(totalTimeField)} id="task-total-time" type="text" placeholder={timePlaceHolder}/>
+              {errors.totalTime && <div className={warningStyle}>{errors.totalTime.message}</div>}
+              <label htmlFor="task-total-time">Temps total estimé</label>
+              <input {...register(totalTimeField)} id="task-total-time" type="text" placeholder={timePlaceHolder}/>
 
-        {errors.taskStatus && <div className={warningStyle}>{errors.taskStatus.message}</div>}
-        <label htmlFor="task-status">Statut de la tâche</label>
-        <select {...register("taskStatus", {onChange: handleStatusSelect})} id="task-status">
-          <option value="">Sélectionnez un statut...</option>
-          {Array.from(statusMap).map((statusItem, index) => <option key={index} value={statusItem[0]}>{statusItem[1]}</option>)}
-        </select>
+              {errors.taskStatus && <div className={warningStyle}>{errors.taskStatus.message}</div>}
+              <label htmlFor="task-status">Statut de la tâche</label>
+              <select {...register("taskStatus", {onChange: handleStatusSelect})} id="task-status">
+                <option value="">Sélectionnez un statut...</option>
+                {Array.from(statusMap).map((statusItem, index) => <option key={index} value={statusItem[0]}>{statusItem[1]}</option>)}
+              </select>
 
-        {errors.timeToComplete && <div className={warningStyle}>{errors.timeToComplete.message}</div>}
-        <label htmlFor="task-remaining-time">Temps restant estimé</label>
-        <input {...register(timeToCompleteField)} id="task-remaining-time" type="text" placeholder={timePlaceHolder}/>
-      </div>
-      
-      <div className="flexSpaceBetween">
-        <div className={styles.buttonVerticalMargin}>
-          <button onClick={resetFormData}>
-            Initialiser
-          </button>
+              {errors.timeToComplete && <div className={warningStyle}>{errors.timeToComplete.message}</div>}
+              <label htmlFor="task-remaining-time">Temps restant estimé</label>
+              <input {...register(timeToCompleteField)} id="task-remaining-time" type="text" placeholder={timePlaceHolder}/>
+            </div>
+            
+            <div className="flexSpaceBetween">
+              <div className={styles.buttonVerticalMargin}>
+                <button onClick={resetFormData}>
+                  Initialiser
+                </button>
+              </div>
+              <div className="flexItemRightAlign">
+                <input disabled={!isValid} type="submit" />
+              </div>
+            </div>
+          </form>
         </div>
-        <div className="flexItemRightAlign">
-          <input disabled={!isValid} type="submit" />
-        </div>
-      </div>
-    </form>
+      )}
+    </Transition>
   )
 };
 
-export default React.memo(TaskForm);
+export default TaskForm;
