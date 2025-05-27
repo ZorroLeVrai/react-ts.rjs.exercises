@@ -14,7 +14,7 @@ function App() {
 
   return (
     <>
-      <h1 className="center-text">Gestion des tâches  (étape 3)</h1>
+      <h1 className="center-text">Gestion des tâches (étape 3)</h1>
       <TaskGroup groupName="Mon premier groupe" tasks={tasks} tasksDispatcher={dispatch}/>
     </>
   )
