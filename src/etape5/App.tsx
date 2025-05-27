@@ -1,7 +1,20 @@
+import { TaskGroup } from "./components/TaskGroup";
+import { Provider } from "react-redux";
+import { store, persistor } from "./store";
+import { PersistGate } from "redux-persist/integration/react";
+import LoadingView from "../components/LoadingView";
 
-const App = () => {
+
+function App() {
   return (
-    <h1 className="center-text">Etape 5</h1>
+    <>
+      <Provider store={store}>
+        <PersistGate loading={<LoadingView />} persistor={persistor}>
+          <h1 className="center-text">Gestion des tâches (étape 5)</h1>
+          <TaskGroup groupName="Mon premier groupe" />
+        </PersistGate>
+      </Provider>
+    </>
   )
 }
 
